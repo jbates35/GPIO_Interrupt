@@ -8,15 +8,17 @@
 #ifndef STM32H743ZG_PERIPHERALS_H_
 #define STM32H743ZG_PERIPHERALS_H_
 
+#define __vo (volatile) //For easy casting as volatile memory
+
 //Base addresses of peripherals
-#define RAMECC3_BASEADDR 		    0x58027000
+#define RAMECC3_BASEADD/R 		    0x58027000
 #define HSEM_BASEADDR			    0x58026400
 #define ADC3_BASEADDR               0x58026000
 #define DMAMUX2_BASEADDR            0x58025800
 #define BDMA_BASEADDR               0x58025400
 #define CRC_BASEADDR                0x58024C00
 #define PWR_BASEADDR                0x58024800
-#define RCC_BASEADDR                0x58024400
+#define BASEADDR                0x58024400
 
 #define GPIOK_BASEADDR              0x58022800
 #define GPIOJ_BASEADDR              0x58022400
@@ -121,10 +123,103 @@
 #define TIM3_BASEADDR               0x40000400 
 #define TIM2_BASEADDR               0x40000000 
 
+/*
+-------------peripheral structs-------------
+Use these with and declare them as pointer structs to 
+be able to access the memory easily
+*/
 
+typedef struct RegDef {
 
+CR
+HSICFGR
+CRRCR
+reserved
+CSICFGR
+CFGR
+reserved
+D1CFGR //good
+D2CFGR
+D3CFGR
+reserved
+PLLCKSELR
+PLLCFGR
+PLL1DIVR
+PLL1FRACR
+PLL2DIVR
+PLL2FRACR
+PLL3DIVR
+PLL3FRACR
+reserved
+D1CCIPR //good
+D2CCIP1R
+D2CCIP2R
+D3CCIPR
+reserved 
+CIER
+CIFR
+CICR
+reserved 
+BDCR //good
+CSR
+reserved 
+AHB3RSTR
+AHB1RSTR
+AHB2RSTR
+AHB4RSTR
+APB3RSTR
+APB1LRSTR
+APB1HRSTR //good
+APB2RSTR
+APB4RSTR
+GCR
+reserved 
+D3AMR
+reserved 
+RSR
+AHB3ENR
+AHB1ENR //good
+AHB2ENR
+AHB4ENR
+APB3ENR
+APB1LENR
+APB1HENR
+APB2ENR
+APB4ENR
+reserved 
+AHB3LPENR // good
+AHB1LPENR
+AHB2LPENR
+AHB4LPENR
+APB3LPENR
+APB1LLPENR
+APB1HLPENR
+APB2LPENR // good
+APB4LPENR 
+reserved 
+C1_RSR
+C1_AHB3ENR
+C1_AHB1ENR
+C1_AHB2ENR
+C1_AHB4ENR
+C1_APB3ENR // good
+C1_APB1LENR
+C1_APB1HENR
+C1_APB2ENR
+C1_APB4ENR
+reserved 
+C1_AHB3LPENR
+C1_AHB1LPENR
+C1_AHB2LPENR
+C1_AHB4LPENR
+C1_APB3LPENR
+C1_APB1LLPENR
+C1_APB1HLPENR
+C1_APB2LPENR
+C1_APB4LPENR
 
-
+    
+} RegDef_t;
 
 /*
 // Actual Pointer Notation with base addresses:
@@ -136,7 +231,7 @@
 #define BDMA                    (*) BDMA_BASEADDR
 #define CRC                     (*) CRC_BASEADDR
 #define PWR                     (*) PWR_BASEADDR
-#define RCC                     (*) RCC_BASEADDR
+#define RCC                     (*) BASEADDR
 #define GPIOK                   (*) GPIOK_BASEADDR
 #define GPIOJ                   (*) GPIOJ_BASEADDR
 #define GPIOI                   (*) GPIOI_BASEADDR

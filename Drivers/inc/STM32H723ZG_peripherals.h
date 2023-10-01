@@ -5,8 +5,8 @@
  *      Author: jbates
  */
 
-#ifndef STM32H743ZG_PERIPHERALS_H_
-#define STM32H743ZG_PERIPHERALS_H_
+#ifndef STM32H723ZG_PERIPHERALS_H_
+#define STM32H723ZG_PERIPHERALS_H_
 
 #define __vo (volatile) //For easy casting as volatile memory
 

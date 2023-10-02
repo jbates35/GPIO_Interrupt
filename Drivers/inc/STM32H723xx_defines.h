@@ -294,4 +294,12 @@ typedef struct SYSCFG_RegDef {
 
 #define SYSCFG                  ((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
+//Generic macros
+#define ENABLE          1
+#define DISABLE         0
+#define SET             ENABLE
+#define RESET           DISABLE
+#define GPIO_PIN_SET    SET
+#define GPIO_PIN_RESET  RESET
+
 #endif /* STM32H743ZG_PERIPHERALS_H_ */

@@ -54,8 +54,8 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 	GPIO_PinConfig_t *cfg = &(p_GPIO_handle->GPIO_pin_config);
 
 	//For easy bit-shifting, dshift is 2*pin number, whereas sshift is just pin_number
-	uint8_t dshift = 2 * cfg->GPIO_pin_number;
-	uint8_t sshift = cfg->GPIO_pin_number;
+	const uint8_t dshift = 2 * cfg->GPIO_pin_number;
+	const uint8_t sshift = cfg->GPIO_pin_number;
 		
 	//Set mode
 	if(cfg->GPIO_pin_mode <= GPIO_MODE_ANALOG) {
@@ -69,7 +69,7 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 	gpiox->OSPEEDR &= ~(0x3 << dshift);
 	gpiox->OSPEEDR = cfg->GPIO_pin_speed << dshift; 
 
-	//Set output type - clear bits to 00 first and then set
+	//Set output type - clear bits to 0 first and then set
 	gpiox->OTYPER &= ~(0x1 << sshift);
 	gpiox->OTYPER |= cfg->GPIO_pin_out_type << sshift;
 	
@@ -78,8 +78,8 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 	gpiox->PUPDR |= cfg->GPIO_pin_pupd_control << dshift;
 
 	//Configure alt functionality - clear bits to 0000 and then set
-	uint8_t alt_no = cfg->GPIO_pin_number / 8;
-	uint8_t alt_shift = (cfg->GPIO_pin_number * 4)%32;
+	const uint8_t alt_no = cfg->GPIO_pin_number / 8;
+	const uint8_t alt_shift = (cfg->GPIO_pin_number * 4)%32;
 	gpiox->AFR[alt_no] &= ~(0xF << alt_shift);
 	gpiox->AFR[alt_no] |= cfg->GPIO_pin_alt_func_mode << alt_shift;
 }

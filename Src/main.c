@@ -40,19 +40,20 @@ void project_init() {
 
 	//GPIO initialization
 	GPIO_Handle_t gpio_handle;
-	GPIO_PinConfig_t *cfg = &(gpio_handle.GPIO_pin_config);
+	GPIO_RegDef_t **gpio_addr = &(gpio_handle.p_GPIO_x);
+	GPIO_PinConfig_t *gpio_cfg = &(gpio_handle.GPIO_pin_config);
 
 	//Enable peripheral clock for GPIO E
 	GPIO_peri_clock_control(GPIOE, ENABLE);
 
-	//LED Setup for GPIO E Pin 0
-	gpio_handle.p_GPIO_x = GPIOE;
-	cfg->GPIO_pin_mode = GPIO_MODE_OUT;
-	cfg->GPIO_pin_number = 0;
-	cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PP;
-	cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
-	cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
-	cfg->GPIO_pin_alt_func_mode = 0;
+	//LED Setup for GPIO E Pin 1
+	*gpio_addr = GPIOE;
+	gpio_cfg->GPIO_pin_mode = GPIO_MODE_OUT;
+	gpio_cfg->GPIO_pin_number = 1;
+	gpio_cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PP;
+	gpio_cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+	gpio_cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
+	gpio_cfg->GPIO_pin_alt_func_mode = 0;
 	GPIO_init(&gpio_handle);
 
 }

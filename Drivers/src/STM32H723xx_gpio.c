@@ -45,8 +45,43 @@ void GPIO_peri_clock_control(GPIO_RegDef_t *p_GPIO_x, uint8_t en_state) {
  * 
  * @param p_gpio_handle GPIO Handle which has all the configuration information
  */
-void GPIO_init(GPIO_Handle_t* p_gpio_handle) {
+void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
+	if(p_GPIO_handle == NULL)
+		return;
 
+	//Create pointers to the GPIO port and the pin configuration for easier access/readability
+	GPIO_RegDef_t *gpiox = p_GPIO_handle->p_GPIO_x;
+	GPIO_PinConfig_t *cfg = &(p_GPIO_handle->GPIO_pin_config);
+
+	//For easy bit-shifting, dshift is 2*pin number, whereas sshift is just pin_number
+	uint8_t dshift = 2 * cfg->GPIO_pin_number;
+	uint8_t sshift = cfg->GPIO_pin_number;
+		
+	//Set mode
+	if(cfg->GPIO_pin_mode <= GPIO_MODE_ANALOG) {
+		gpiox->MODER &= ~(0x3 << dshift);
+		gpiox->MODER |= cfg->GPIO_pin_mode << dshift;
+	} else {
+		//TODO: Code later for interrupt
+	}
+
+	//Set output speed - clear bits to 00 and then set
+	gpiox->OSPEEDR &= ~(0x3 << dshift);
+	gpiox->OSPEEDR = cfg->GPIO_pin_speed << dshift; 
+
+	//Set output type - clear bits to 00 first and then set
+	gpiox->OTYPER &= ~(0x1 << sshift);
+	gpiox->OTYPER |= cfg->GPIO_pin_out_type << sshift;
+	
+	//Set pullup/pulldown resistor - clear bits to 00 and then set
+	gpiox->PUPDR &= ~(0x3 << dshift);
+	gpiox->PUPDR |= cfg->GPIO_pin_pupd_control << dshift;
+
+	//Configure alt functionality - clear bits to 0000 and then set
+	uint8_t alt_no = cfg->GPIO_pin_number / 8;
+	uint8_t alt_shift = (cfg->GPIO_pin_number * 4)%32;
+	gpiox->AFR[alt_no] &= ~(0xF << alt_shift);
+	gpiox->AFR[alt_no] |= cfg->GPIO_pin_alt_func_mode << alt_shift;
 }
 
 /**

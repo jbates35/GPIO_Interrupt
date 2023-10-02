@@ -16,24 +16,29 @@
 /**
  * @brief Allows the clock for the given GPIO port to be enabled or disabled
  * 
- * @param p_gpio_x GPIO register information
+ * @param p_GPIO_x GPIO register information
  * @param en_state Enable state - 1 for enable and 0 for disable
  */
-void GPIO_peri_clock_control(GPIO_RegDef_t *p_gpio_x, uint8_t en_state) {
+void GPIO_peri_clock_control(GPIO_RegDef_t *p_GPIO_x, uint8_t en_state) {
+	if(p_GPIO_x == NULL) 
+		return;
+
     static GPIO_RegDef_t *const GPIOx_BASE_ADDRS[11] = {
         GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH, NULL, GPIOJ, GPIOK
     };
 
     for(int i = 0; i < sizeof(GPIOx_BASE_ADDRS)/sizeof(GPIO_RegDef_t*); i++) {
-        if(p_gpio_x == GPIOx_BASE_ADDRS[i] && en_state == ENABLE) {
+    	if(p_GPIO_x != GPIOx_BASE_ADDRS[i])
+    		continue;
+
+        if(en_state == ENABLE)
             RCC->AHB4ENR |= (1 << i);
-            break;
-        } else if (p_gpio_x == GPIOx_BASE_ADDRS[i] && en_state == DISABLE) {
+		else
             RCC->AHB4ENR &= ~(1 << i);
+
             break;
         }
     }
-} 
 
 /**
  * @brief Initializes the GPIO port

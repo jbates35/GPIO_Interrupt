@@ -51,3 +51,4 @@ release
 *.idb
 *.pdb
 .vscode/settings.json
+.cproject

@@ -18,8 +18,8 @@
 
 #include <stdint.h>
 
-#include "STM32H723xx_defines.h"
 #include "STM32H723xx_gpio.h"
+#include "STM32H723xx_defines.h"
 
 #define YELLOW_LED (1 << 0)
 
@@ -27,33 +27,32 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+void project_init(void);
+
 int main(void)
 {
-  RCC_RegDef_t *rcc = RCC;
-  GPIOE_PCLK_EN();
+	project_init();
 
-  GPIO_RegDef_t *gpioe = GPIOE;
+	for(;;) {  }
+}
 
-  //Set yellow LED for blinking later
-  gpioe->MODER |= (01 << 0);
+void project_init() {
 
-  //Shitty counter for now
-  int i = 0;
-  int yled_state = 0;
+	//GPIO initialization
+	GPIO_Handle_t gpio_handle;
+	GPIO_PinConfig_t *cfg = &(gpio_handle.GPIO_pin_config);
 
-  /* Loop forever */ 
-  for(;;) {
-    if(i++<300000)
-      continue;
+	//Enable peripheral clock for GPIO E
+	GPIO_peri_clock_control(GPIOE, ENABLE);
 
-    i = 0;
+	//LED Setup for GPIO E Pin 0
+	gpio_handle.p_GPIO_x = GPIOE;
+	cfg->GPIO_pin_mode = GPIO_MODE_OUT;
+	cfg->GPIO_pin_number = 0;
+	cfg->GPIO_pin_out_type = GPIO_OP_TYPE_PP;
+	cfg->GPIO_pin_pupd_control = GPIO_PUPDR_NONE;
+	cfg->GPIO_pin_speed = GPIO_SPEED_LOW;
+	cfg->GPIO_pin_alt_func_mode = 0;
+	GPIO_init(&gpio_handle);
 
-    if(yled_state == 0) {
-      yled_state = 1;
-      gpioe->ODR |= (1 << 0);
-    } else {
-      yled_state = 0;
-      gpioe->ODR &= ~(1 << 0);
-    }
-  }
 }

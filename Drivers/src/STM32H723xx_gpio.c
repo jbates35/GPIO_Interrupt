@@ -36,14 +36,14 @@ void GPIO_peri_clock_control(GPIO_RegDef_t *p_GPIO_x, uint8_t en_state) {
 		else
             RCC->AHB4ENR &= ~(1 << i);
 
-            break;
-        }
-    }
+        break;
+	}
+}
 
 /**
  * @brief Initializes the GPIO port
  * 
- * @param p_gpio_handle GPIO Handle which has all the configuration information
+ * @param p_GPIO_handle GPIO Handle which has all the configuration information
  */
 void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 	if(p_GPIO_handle == NULL)
@@ -87,61 +87,61 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 /**
  * @brief De-initializes the GPIO port
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  */
-void GPIO_deinit(GPIO_RegDef_t *p_gpio_x) {
+void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
 
 }
 
 /**
  * @brief Reads the value of the given pin
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  * @param pin Pin to be read
  * @return uint8_t Value of the input associated with the pin
  */
-uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_gpio_x, uint8_t pin) {
-
+uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
+	return 0;
 }
 
 /**
  * @brief Read the entire value of the GPIO port
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  * @return uint16_t Word containing the value of the GPIO port
  */
-uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_gpio_x) {
-
+uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x) {
+	return 0;
 }
 
 /**
  * @brief Value to be written to the given pin, when configured as output
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  * @param pin Pin which will be read
  * @param val Output value - 1 for high, 0 for low
  */
-void GPIO_write_to_output_pin(GPIO_RegDef_t *p_gpio_x, uint8_t pin, uint8_t val) {
+void GPIO_write_to_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin, uint8_t val) {
 
 }
 
 /**
  * @brief Value to write to entire GPIO port, when configured as output
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  * @param val Word containing the value to be written to the GPIO port
  */
-void GPIO_write_to_output_port(GPIO_RegDef_t *p_gpio_x, uint16_t val) {
+void GPIO_write_to_output_port(GPIO_RegDef_t *p_GPIO_x, uint16_t val) {
 
 }
 
 /**
  * @brief Toggle the output value of the given pin
  * 
- * @param p_gpio_x GPIO port information
+ * @param p_GPIO_x GPIO port information
  * @param pin Pin to be toggled
  */
-void GPIO_toggle_output_pin(GPIO_RegDef_t *p_gpio_x, uint8_t pin) {
+void GPIO_toggle_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
 
 }
 

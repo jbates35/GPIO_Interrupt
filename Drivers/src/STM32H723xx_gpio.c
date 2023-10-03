@@ -90,7 +90,22 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
  * @param p_GPIO_x GPIO port information
  */
 void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
+	if(p_GPIO_x == NULL) 
+		return;
 
+    static GPIO_RegDef_t *const GPIOx_BASE_ADDRS[11] = {
+        GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH, NULL, GPIOJ, GPIOK
+    };	
+
+    for(int i = 0; i < sizeof(GPIOx_BASE_ADDRS)/sizeof(GPIO_RegDef_t*); i++) {
+    	if(p_GPIO_x != GPIOx_BASE_ADDRS[i])
+    		continue;
+
+		RCC->AHB4RSTR |= (1 << i);
+		RCC->AHB4RSTR &= ~(1 << i);
+
+        break;
+	}
 }
 
 /**
@@ -101,7 +116,10 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
  * @return uint8_t Value of the input associated with the pin
  */
 uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
-	return 0;
+	if(p_GPIO_x == NULL)
+		return;
+	
+	return (p_GPIO_x->IDR >> pin) & 0x1;
 }
 
 /**
@@ -111,7 +129,10 @@ uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
  * @return uint16_t Word containing the value of the GPIO port
  */
 uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x) {
-	return 0;
+	if(p_GPIO_x == NULL)
+		return;
+	
+	return (uint16_t) p_GPIO_x->IDR;
 }
 
 /**
@@ -122,7 +143,13 @@ uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x) {
  * @param val Output value - 1 for high, 0 for low
  */
 void GPIO_write_to_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin, uint8_t val) {
-
+	if(p_GPIO_x == NULL)
+		return;
+	
+	if(val == 1)
+		p_GPIO_x->ODR |= (val << pin);
+	else
+		p_GPIO_x->ODR &= ~(val << pin);
 }
 
 /**
@@ -132,7 +159,10 @@ void GPIO_write_to_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin, uint8_t val)
  * @param val Word containing the value to be written to the GPIO port
  */
 void GPIO_write_to_output_port(GPIO_RegDef_t *p_GPIO_x, uint16_t val) {
+	if(p_GPIO_x == NULL)
+		return;
 
+	p_GPIO_x->ODR = val;
 }
 
 /**
@@ -142,7 +172,10 @@ void GPIO_write_to_output_port(GPIO_RegDef_t *p_GPIO_x, uint16_t val) {
  * @param pin Pin to be toggled
  */
 void GPIO_toggle_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
+	if(p_GPIO_x == NULL)
+		return;
 
+	p_GPIO_x->ODR ^= (1 << pin);
 }
 
 /**

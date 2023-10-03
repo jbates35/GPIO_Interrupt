@@ -104,7 +104,7 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
 		RCC->AHB4RSTR |= (1 << i);
 		RCC->AHB4RSTR &= ~(1 << i);
 
-        break;
+		break;
 	}
 }
 

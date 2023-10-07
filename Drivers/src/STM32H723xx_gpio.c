@@ -146,10 +146,10 @@ void GPIO_write_to_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin, uint8_t val)
 	if(p_GPIO_x == NULL)
 		return;
 	
-	if(val == 1)
-		p_GPIO_x->ODR |= (val << pin);
+	if(val == 0)
+		p_GPIO_x->ODR &= ~(1 << pin);
 	else
-		p_GPIO_x->ODR &= ~(val << pin);
+		p_GPIO_x->ODR |= (1 << pin);
 }
 
 /**

@@ -8,7 +8,7 @@
 #ifndef INC_STM32H723XX_GPIO_H_
 #define INC_STM32H723XX_GPIO_H_
 
-#include "STM32H723xx_defines.h"
+#include "stm32h723xx.h"
 
 typedef struct {
 	uint8_t GPIO_pin_number;

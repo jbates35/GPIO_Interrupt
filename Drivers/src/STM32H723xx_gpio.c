@@ -5,7 +5,7 @@
  *      Author: jbate
  */
 
-#include "STM32H723xx_gpio.h"
+#include "stm32h723xx_gpio.h"
 
 #include <stdio.h>
 

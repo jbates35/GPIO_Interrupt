@@ -18,8 +18,8 @@
 
 #include <stdint.h>
 
-#include "STM32H723xx_gpio.h"
-#include "STM32H723xx_defines.h"
+#include "stm32h723xx_gpio.h"
+#include "stm32h723xx.h"
 
 #define YELLOW_LED (1 << 0)
 

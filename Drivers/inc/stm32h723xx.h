@@ -12,6 +12,32 @@
 
 #define __vo volatile //For easy casting as volatile memory
 
+/************** START: Processor specific details (cortex-m7) *****************/
+/**
+ * ARM Cortex M7 processor NVIC ISERx and ICERx register addresses
+*/
+#define NVIC_ISERX_BASEADDR         0xE000E100
+#define NVIC_ICERX_BASEADDR         0xE000E180 
+
+typedef struct NVIC_RegDef {
+    __vo uint32_t ISER[8];          // NVIC Interrupt set registers
+    uint32_t RESERVED1[24];
+    __vo uint32_t ICER[8];          // NVIC Interrupt clear registers
+    uint32_t RESERVED2[24];
+    __vo uint32_t ISPR[8];          // NVIC Interrupt set pending registers
+    uint32_t RESERVED3[24];
+    __vo uint32_t ICPR[8];          // NVIC Interrupt clear pending registers
+    uint32_t RESERVED4[24];
+    __vo uint32_t IABR[8];          // NVIC Interrupt active bit register (read only)
+    uint32_t RESERVED5[56];
+    __vo uint32_t IPR[60];          // NVIC Interrupt priority register
+} NVIC_RegDef_t;
+
+#define NVIC                        ((NVIC_RegDef_t*) NVIC_ISERX_BASEADDR)
+
+
+/************** END: Processor specific details (cortex-m7) *****************/
+
 //Base addresses of peripherals
 #define HSEM_BASEADDR			    0x58026400
 #define ADC3_BASEADDR               0x58026000
@@ -252,17 +278,55 @@ typedef struct GPIO_RegDef {
 } GPIO_RegDef_t;
 
 typedef struct SYSCFG_RegDef {
+    uint32_t RESERVED1;
     __vo uint32_t PMCR;         // SysConfig peripheral mode configuration register
     __vo uint32_t EXTICR[4];    // SysConfig external interrupt configuration registers
-    __vo uint32_t CFGR;         // SysConfig timer break lockup register
-    __vo uint32_t CCCSR;        // SysConfig compensation cell control/status register
+    uint32_t RESERVED2[2];      // Reserved
+	__vo uint32_t CCCSR;        // SysConfig compensation cell control/status register
     __vo uint32_t CCVR;         // SysConfig compensation cell value register
     __vo uint32_t CCCR;         // SysConfig compensation cell code register
-    __vo uint32_t ADC2ALT;      // SysConfig internal input alternate connection register
+    uint32_t RESERVED3;			// Reserved
+	__vo uint32_t ADC2ALT;      // SysConfig internal input alternate connection register
+    uint32_t RESERVED4[60];  	// Reserved
     __vo uint32_t PKGR;         // SysConfig package register
-    __vo uint32_t UR[19];       // SysConfig user registers
+    uint32_t RESERVED5[118];		// Reserved
+    __vo uint32_t UR[18];       // SysConfig user registers
 } SYSCFG_RegDef_t;
 
+typedef struct EXTI_RegDef { 
+    __vo uint32_t RTSR1;       	// EXTI Rising trigger selection register
+    __vo uint32_t FTSR1;       	// EXTI Falling trigger selection register
+    __vo uint32_t SWIER1;      	// EXTI Software interrupt event register
+    __vo uint32_t D3PMR1;      	// EXTI D3 Pending mask register
+    __vo uint32_t D3PCR1L;     	// EXTI D3 Pending clear selection register low
+    __vo uint32_t D3PCR1H;     	// EXTI D3 Pending clear selection register high
+    uint32_t RESERVED1[2];		// Reserved
+	__vo uint32_t RTSR2;       	// EXTI Rising trigger selection register
+    __vo uint32_t FTSR2;       	// EXTI Falling trigger selection register
+    __vo uint32_t SWIER2;      	// EXTI Software interrupt event register
+    __vo uint32_t D3PMR2;      	// EXTI D3 Pending mask register
+    __vo uint32_t D3PCR2L;     	// EXTI D3 Pending clear selection register low
+    __vo uint32_t D3PCR2H;     	// EXTI D3 Pending clear selection register high
+    uint32_t RESERVED2[2];     	// Reserved
+    __vo uint32_t RTSR3;       	// EXTI Rising trigger selection register
+    __vo uint32_t FTSR3;       	// EXTI Falling trigger selection register
+    __vo uint32_t SWIER3;      	// EXTI Software interrupt event register
+    __vo uint32_t D3PMR3;      	// EXTI D3 Pending mask register
+    __vo uint32_t D3PCR3L;     	// EXTI D3 Pending clear selection register low
+    __vo uint32_t D3PCR3H;     	// EXTI D3 Pending clear selection register high
+    uint32_t RESERVED3[10];    	// Reserved
+    __vo uint32_t CPUIMR1;     	// EXTI Interrupt mask register
+    __vo uint32_t CPUCPUE_MR1; 	// EXTI Interrupt clear register
+    __vo uint32_t CPUPR1;      	// EXTI Interrupt pending register
+    uint32_t RESERVED4;			// Reserved
+	__vo uint32_t CPUIMR2;     	// EXTI Interrupt mask register
+    __vo uint32_t CPUEMR2;     	// EXTI Event mask register
+    __vo uint32_t CPUPR2;      	// EXTI Pending register
+    uint32_t RESERVED5;			// Reserved
+	__vo uint32_t CPUIMR3;     	// EXTI Interrupt mask register
+    __vo uint32_t CPUEMR3;     	// EXTI Event mask register
+    __vo uint32_t CPUPR3;      	// EXTI Pending register
+} EXTI_RegDef_t;
 
 // Actual Pointer Notation with base addresses:
 #define RCC                     ((RCC_RegDef_t*) RCC_BASEADDR)
@@ -279,6 +343,8 @@ typedef struct SYSCFG_RegDef {
 #define GPIOJ_PCLK_EN()           (RCC->AHB4ENR |= (1 << 9))
 #define GPIOK_PCLK_EN()           (RCC->AHB4ENR |= (1 << 10))
 
+#define SYSCFG_PCLK_EN()          (RCC->APB4ENR |= (1 << 1))
+
 #define HSEM                    ((HSEM_RegDef_t*) HSEM_BASEADDR)
 
 #define GPIOA                   ((GPIO_RegDef_t*) GPIOA_BASEADDR)
@@ -294,6 +360,8 @@ typedef struct SYSCFG_RegDef {
 
 #define SYSCFG                  ((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
+#define EXTI                    ((EXTI_RegDef_t*) EXTI_BASEADDR)
+
 //Generic macros
 #define ENABLE          1
 #define DISABLE         0
@@ -301,5 +369,15 @@ typedef struct SYSCFG_RegDef {
 #define RESET           DISABLE
 #define GPIO_PIN_SET    SET
 #define GPIO_PIN_RESET  RESET
+
+//IRQ macros
+#define IRQ_NO_EXTI0        6
+#define IRQ_NO_EXTI1        7
+#define IRQ_NO_EXTI2        8
+#define IRQ_NO_EXTI3        9
+#define IRQ_NO_EXTI4        10
+#define IRQ_NO_EXTI9_5      23
+#define IRQ_NO_EXTI15_10    40
+
 
 #endif /* STM32H743ZG_PERIPHERALS_H_ */

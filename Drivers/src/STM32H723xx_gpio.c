@@ -54,6 +54,7 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 	GPIO_PinConfig_t *cfg = &(p_GPIO_handle->GPIO_pin_config);
 
 	//For easy bit-shifting, dshift is 2*pin number, whereas sshift is just pin_number
+	const uint8_t qshift = 4 * cfg->GPIO_pin_number;
 	const uint8_t dshift = 2 * cfg->GPIO_pin_number;
 	const uint8_t sshift = cfg->GPIO_pin_number;
 		
@@ -62,7 +63,40 @@ void GPIO_init(GPIO_Handle_t* p_GPIO_handle) {
 		gpiox->MODER &= ~(0x3 << dshift);
 		gpiox->MODER |= cfg->GPIO_pin_mode << dshift;
 	} else {
-		//TODO: Code later for interrupt
+		//Enable SYSCFG clock
+		SYSCFG_PCLK_EN();
+
+		static GPIO_RegDef_t *const GPIOx_BASE_ADDRS[11] = {
+			GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOF, GPIOG, GPIOH, NULL, GPIOJ, GPIOK
+		};
+
+		//Turn on correct EXTI
+		for (int bank = 0; bank < sizeof(GPIOx_BASE_ADDRS)/sizeof(GPIO_RegDef_t*); bank++) {
+			if(gpiox != GPIOx_BASE_ADDRS[bank])
+				continue;
+			
+			SYSCFG->EXTICR[cfg->GPIO_pin_number/4] = bank << (qshift%16);
+			break;
+		}
+
+		//Configure correct edge
+		if(cfg->GPIO_pin_mode == GPIO_MODE_IT_FT) {
+			EXTI->FTSR1 |= (1 << sshift);
+			EXTI->RTSR1 &= ~(1 << sshift);
+		} else if (cfg->GPIO_pin_mode == GPIO_MODE_IT_RT) {
+			EXTI->FTSR1 &= ~(1 << sshift);
+			EXTI->RTSR1 |= (1 << sshift);
+		} else {
+			EXTI->FTSR1 |= (1 << sshift);
+			EXTI->RTSR1 |= (1 << sshift);
+		}
+
+		//Unmask bit in EXTI
+		EXTI->CPUIMR1 |= (1 << sshift);
+		
+		//Make pin input
+		gpiox->MODER &= ~(0x3 << dshift);
+		gpiox->MODER |= (GPIO_MODE_IN << dshift);
 	}
 
 	//Set output speed - clear bits to 00 and then set
@@ -117,7 +151,7 @@ void GPIO_deinit(GPIO_RegDef_t *p_GPIO_x) {
  */
 uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
 	if(p_GPIO_x == NULL)
-		return;
+		return 0;
 	
 	return (p_GPIO_x->IDR >> pin) & 0x1;
 }
@@ -130,7 +164,7 @@ uint8_t GPIO_read_from_input_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
  */
 uint16_t GPIO_read_from_input_port(GPIO_RegDef_t *p_GPIO_x) {
 	if(p_GPIO_x == NULL)
-		return;
+		return 0;
 	
 	return (uint16_t) p_GPIO_x->IDR;
 }
@@ -182,19 +216,49 @@ void GPIO_toggle_output_pin(GPIO_RegDef_t *p_GPIO_x, uint8_t pin) {
  * @brief Configure the IRQ for the given pin
  * 
  * @param irq_number IRQ number to be configured
- * @param irq_priority Priority of the IRQ
  * @param en_state State of the IRQ - 1 for enable, 0 for disable
  */
-void GPIO_irq_config(uint8_t irq_number, uint8_t irq_priority, uint8_t en_state) {
+void GPIO_irq_interrupt_config(uint8_t irq_number, uint8_t en_state) {
+	//Enables or disables NVIC
+	//Programs ISER if enable, programs ICER if disable
+	if(en_state)
+		NVIC->ISER[irq_number/32] |= (1 << (irq_number%32));
+	else
+		NVIC->ICER[irq_number/32] |= (1 << (irq_number%32));
 
+	int delme=0;
+}
+
+/**
+ * @brief Configure the IRQ priority
+ * 
+ * @param irq_number IRQ number which priority should be changed
+ * @param irq_priority Priority of the IRQ
+ */
+void GPIO_irq_priority_config(uint8_t irq_number, uint8_t irq_priority) {
+	// Sets the priority of the IRQ
+	// Each IRQ has 4 bits of priority, so the IRQ number is divided by 4 to get the correct register
+	uint8_t qshift = (irq_number*8)%32; // Will result in bits 0 - 240*8
+	uint8_t qindex = (irq_number*8)/32;
+
+	NVIC->IPR[qindex] &= ~(0xFF << qshift);
+	NVIC->IPR[qindex] |= (irq_priority << qshift << 4) & (0xF0 << qshift);
 }
 
 /**
  * @brief Set the IRQ handling for the given pin
  * 
  * @param pin Pin to have IRQ handling set
+ * 
+ * @return 1 if there was an ISR flag. 0 if there wasn't.
  */
-void GPIO_irq_handling(uint8_t pin) {
+int GPIO_irq_handling(uint8_t pin) {
+	// Clear ISR flag
+	if(EXTI->CPUPR1 & (1 << pin)) {
+		EXTI->CPUPR1 |= (1 << pin);
+		return 1;
+	}
 
+	return 0;
 }
 

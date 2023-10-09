@@ -80,7 +80,8 @@ void GPIO_toggle_output_pin(GPIO_RegDef_t *p_gpio_x, uint8_t pin);
 /*
  * IRQ configuration and IRQ handling
  */
-void GPIO_irq_config(uint8_t irq_number, uint8_t irq_priority, uint8_t en_state);
-void GPIO_irq_handling(uint8_t pin);
+void GPIO_irq_interrupt_config(uint8_t irq_number, uint8_t en_state);
+void GPIO_irq_priority_config(uint8_t irq_number, uint8_t irq_priority);
+int GPIO_irq_handling(uint8_t pin);
 
 #endif /* INC_STM32H723XX_GPIO_H_ */

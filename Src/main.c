@@ -82,6 +82,6 @@ void program_init(void) {
 }
 
 void EXTI15_10_IRQHandler(void) {
-	GPIO_irq_handling(13);
-	GPIO_toggle_output_pin(GPIOB, 0);
+	if(GPIO_irq_handling(13))
+		GPIO_toggle_output_pin(GPIOB, 0);
 }
